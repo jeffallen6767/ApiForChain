@@ -1,0 +1,30 @@
+{
+  "name": "api-for-chain",
+  "version": "1.0.0",
+  "description": "An api for the chain.",
+  "private": false,
+  "main": "index.js",
+  "api_config": {
+    "port": 6767
+  },
+  "dependencies": {
+    "colors": "^1.2.1",
+    "commander": "^2.15.1",
+    "cross-env": "^5.1.4",
+    "express": "^4.16.3",
+    "pm2": "^2.10.1"
+  },
+  "scripts": {
+    "start": "cross-env node cli.js -s start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffallen6767/ApiForChain.git"
+  },
+  "keywords": [],
+  "author": "Jeff Allen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeffallen6767/ApiForChain.git/issues"
+  }
+}
