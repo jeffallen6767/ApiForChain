@@ -13,6 +13,7 @@ var
   },
   sendJson = function(res, data) {
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.send(
       JSON.stringify(
         typeof data === "object"
@@ -21,8 +22,8 @@ var
       )
     );
   },
-  loadUsers = function(callback) {
-    return chain.wallet.loadUsers(callback);
+  loadAccounts = function(callback) {
+    return chain.wallet.loadAccounts(callback);
   },
   inst = null,
   start = function(ctx, callback) {
@@ -43,10 +44,10 @@ var
       res.sendFile(indexPath);
     });
     
-    app.get('/loadUsers', function(req, res){
-      loadUsers(function(data) {
+    app.get('/loadAccounts', function(req, res){
+      loadAccounts(function(data) {
         sendJson(res, {
-          "users": data
+          "accounts": data
         });
       });
     });

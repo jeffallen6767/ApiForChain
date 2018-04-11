@@ -15,7 +15,8 @@
     "pm2": "^2.10.1"
   },
   "scripts": {
-    "start": "cross-env node cli.js -s start"
+    "start": "cross-env node cli.js -s start",
+    "stop": "cross-env node cli.js -s stop"
   },
   "repository": {
     "type": "git",
