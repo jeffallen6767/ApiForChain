@@ -12,13 +12,20 @@ var
     });
   },
   sendJson = function(res, data) {
+    var 
+      dataType = typeof data,
+      dataIsObject = dataType === "object";
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.send(
       JSON.stringify(
-        typeof data === "object"
+        dataIsObject
           ? data 
-          : {"err": "no data"}
+          : {
+              "error": "data not an object",
+              "data": data,
+              "type": dataType
+            }
       )
     );
   },
