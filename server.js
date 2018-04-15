@@ -1,6 +1,7 @@
 var
   chain = require('chain'),
   express = require('express'),
+  cors = require('cors'),
   path = require('path'),
   dir = __dirname,
   args = process.argv.slice(),
@@ -15,8 +16,6 @@ var
     var 
       dataType = typeof data,
       dataIsObject = dataType === "object";
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.send(
       JSON.stringify(
         dataIsObject
@@ -32,6 +31,11 @@ var
   loadAccounts = function(callback) {
     return chain.wallet.loadAccounts(callback);
   },
+  unlockAccount = function(account, callback) {
+    return callback(
+      chain.wallet.unlock(account)
+    );
+  },
   inst = null,
   start = function(ctx, callback) {
     var 
@@ -42,20 +46,32 @@ var
       cbk = typeof callback === 'function' ? callback : function() {
         console.log('Server listening on port ' + port);
       };
-
+    
+    app.use(express.json());
+    
+    app.use(cors());
+    
     app.use(
       express.static(staticPath)
     );
-
-    app.get('/', function(req, res){
+    
+    app.get('/', function(req, res) {
       res.sendFile(indexPath);
     });
     
-    app.get('/loadAccounts', function(req, res){
+    app.get('/loadAccounts', function(req, res) {
       loadAccounts(function(data) {
         sendJson(res, {
           "accounts": data
         });
+      });
+    });
+    
+    app.post('/unlockAccount', function(req, res) {
+      var 
+        account = req.body;
+      unlockAccount(account, function(data) {
+        sendJson(res, account);
       });
     });
     
