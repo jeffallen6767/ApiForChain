@@ -1,5 +1,6 @@
 var
-  chain = require('chain'),
+  config = "test",
+  chain = require('chain').init(config),
   express = require('express'),
   cors = require('cors'),
   path = require('path'),
@@ -7,10 +8,14 @@ var
   args = process.argv.slice(),
   staticPath = './public',
   sendMessage = function(data) {
-    process.send({
-      type: 'process:msg',
-      data: data
-    });
+    if (process && typeof process.send === "function") {
+      process.send({
+        type: 'process:msg',
+        data: data
+      });
+    } else {
+      console.log("server.sendMessage", data);
+    }
   },
   sendJson = function(res, data) {
     var 
@@ -41,8 +46,6 @@ var
     var 
       app = express(),
       port = ctx.port,
-      staticPath = path.join(dir, ctx.publicFolder),
-      indexPath = path.join(staticPath, ctx.indexFile),
       cbk = typeof callback === 'function' ? callback : function() {
         console.log('Server listening on port ' + port);
       };
@@ -50,14 +53,6 @@ var
     app.use(express.json());
     
     app.use(cors());
-    
-    app.use(
-      express.static(staticPath)
-    );
-    
-    app.get('/', function(req, res) {
-      res.sendFile(indexPath);
-    });
     
     app.get('/loadAccounts', function(req, res) {
       loadAccounts(function(data) {
@@ -95,9 +90,7 @@ if (args.length > 3) {
           port = args[5] - 0;
         }
         serverApi.start({
-          "port": port,
-          "publicFolder": "public",
-          "indexFile": "index.html"
+          "port": port
         }, function() {
           sendMessage({
             topic: 'server-ready',
