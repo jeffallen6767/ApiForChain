@@ -1,5 +1,5 @@
 var
-  config = "test",
+  config = "dev",
   chain = require('chain').init(config),
   express = require('express'),
   cors = require('cors'),
@@ -34,11 +34,16 @@ var
     );
   },
   loadAccounts = function(callback) {
-    return chain.wallet.loadAccounts(callback);
+    return chain.wallet().loadAccounts(callback);
   },
   unlockAccount = function(account, callback) {
     return callback(
-      chain.wallet.unlock(account)
+      chain.wallet().unlock(account)
+    );
+  },
+  createAccount = function(account, callback) {
+    return callback(
+      chain.wallet().create(account)
     );
   },
   inst = null,
@@ -66,6 +71,14 @@ var
       var 
         account = req.body;
       unlockAccount(account, function(data) {
+        sendJson(res, account);
+      });
+    });
+    
+    app.post('/createAccount', function(req, res) {
+      var 
+        account = req.body;
+      createAccount(account, function(data) {
         sendJson(res, account);
       });
     });
