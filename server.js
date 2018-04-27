@@ -1,6 +1,7 @@
 var
   config = "dev",
   chain = require('chain').init(config),
+  wallet = chain.wallet(),
   express = require('express'),
   cors = require('cors'),
   path = require('path'),
@@ -21,8 +22,10 @@ var
     var 
       dataType = typeof data,
       dataIsObject = dataType === "object";
-    res.send(
-      JSON.stringify(
+    console.log("sendJson", data);
+    //res.send(
+    res.json(
+      //JSON.stringify(
         dataIsObject
           ? data 
           : {
@@ -30,20 +33,25 @@ var
               "data": data,
               "type": dataType
             }
-      )
+      //)
     );
   },
   loadAccounts = function(callback) {
-    return chain.wallet().loadAccounts(callback);
+    return wallet.loadAccounts(callback);
+  },
+  lockAccount = function(account, callback) {
+    return callback(
+      wallet.lock(account)
+    );
   },
   unlockAccount = function(account, callback) {
     return callback(
-      chain.wallet().unlock(account)
+      wallet.unlock(account)
     );
   },
   createAccount = function(account, callback) {
     return callback(
-      chain.wallet().create(account)
+      wallet.create(account)
     );
   },
   inst = null,
@@ -67,11 +75,23 @@ var
       });
     });
     
+    app.post('/lockAccount', function(req, res) {
+      var 
+        account = req.body;
+      lockAccount(account, function(data) {
+        sendJson(res, {
+          "account": account
+        });
+      });
+    });
+    
     app.post('/unlockAccount', function(req, res) {
       var 
         account = req.body;
       unlockAccount(account, function(data) {
-        sendJson(res, account);
+        sendJson(res, {
+          "account": account
+        });
       });
     });
     
@@ -79,7 +99,9 @@ var
       var 
         account = req.body;
       createAccount(account, function(data) {
-        sendJson(res, account);
+        sendJson(res, {
+          "account": account
+        });
       });
     });
     
